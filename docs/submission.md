@@ -35,24 +35,44 @@
 | Styling | Tailwind CSS v4 + shadcn/ui v4 | UI components and design system |
 | Charts | Recharts | Data visualization |
 | Data | YouTube Data API v3 | Channel and video metrics |
-| AI | Claude (Anthropic) | Architecture, algorithms, component scaffolding |
-| AI | Cursor | Inline completions while wiring components |
+| Editor | Cursor | Code editor |
+| AI | Claude (Anthropic) via Claude Code CLI | Architecture, algorithms, component scaffolding |
+| Methodology | SDD + Engram (Gentleman) | Structured AI-assisted development |
 | Deploy | Vercel | Zero-config Next.js deployment |
 | Validation | Zod v4 | Runtime input validation on API routes |
+
+### Development methodology: SDD + Engram
+
+This wasn't standard "ask AI, paste code" development. I use a structured workflow called **Spec-Driven Development (SDD)** — a methodology from [Gentleman](https://www.youtube.com/@gentlemanprogramming) that I've adopted as part of my standard setup across all projects.
+
+Every meaningful feature went through an explicit artifact chain before any code was written:
+
+```
+explore → propose → spec → design → tasks → apply → verify → archive
+```
+
+Each artifact is persisted via **Engram** — a session-persistent memory layer that keeps the AI's full context alive across separate work sessions. Architectural decisions made in the first session were still available in the fifth without re-explaining anything.
+
+**What this enabled in practice:**
+- No context drift — every session started from a complete picture: stack constraints, API strategy, decisions already made and *why*
+- No scope creep — specs defined what was in and out before implementation, so the AI executed within clear boundaries
+- Human stays in control — I directed what to build and why; the AI implemented the defined tasks. The product thinking was mine.
+
+This is the difference between using AI as sophisticated autocomplete versus using it as a properly scoped collaborator with a memory architecture underneath it.
 
 ### What I automated, accelerated, or simplified
 
 **Accelerated with AI:**
-- Full TypeScript type system designed in a single planning session with Claude
-- Algorithm drafts for Z-score trending and composite performance scoring — drafted by AI, then verified and refined
+- Full TypeScript type system designed in a single planning session
+- Algorithm drafts for Z-score trending and composite performance scoring — drafted by AI, verified and refined by me
 - Boilerplate structure (API route wrappers, hook patterns, shared utilities)
-- Documentation and README
+- Documentation
 
 **Made the key decisions myself:**
 - Using the `playlistItems` API over `search.list` — quota savings of ~97% (5–8 units vs 100+ per analysis)
 - Z-score approach for trending — channel-relative, not arbitrary absolute thresholds
 - Composite performance score architecture (4 equally weighted dimensions)
-- Progressive loading UX — channel header appears before all videos are fetched
+- Progressive loading UX — channel header appears while videos are still fetching
 - Base64url share encoding with no database dependency
 - shadcn/ui v4 on Base UI (not Radix) — newer, more composable, better long-term
 
@@ -68,13 +88,13 @@
 
 3. **Video topic clustering** — use AI to group videos by theme and surface which content pillars perform best for a given channel
 
-4. **Notification alerts** — "this competitor just posted a video trending above their baseline" via email or Slack webhook
+4. **Thumbnail analysis** — CV-powered scoring of thumbnail effectiveness (brightness, face presence, text density) correlated with performance
 
-5. **Thumbnail analysis** — CV-powered scoring of thumbnail effectiveness (brightness, face presence, text density) correlated with CTR proxies
+5. **Best time to post** — analyze publish timestamps vs performance across a channel's catalog to surface optimal upload windows
 
-6. **Best time to post** — analyze publish timestamps vs performance across a channel's catalog to surface optimal upload windows
+6. **Transcript-based topic analysis** — use YouTube captions to understand what topics dominate top-performing videos
 
-7. **Transcript-based topic analysis** — use YouTube captions to understand what topics dominate top-performing videos
+7. **Team workspaces** — shared saved analyses with annotations, so the whole team works from the same competitive intelligence
 
 ### What feels missing from the current version
 
@@ -88,8 +108,8 @@
 - Replace base64 share links with short URLs backed by a real datastore (Redis or Supabase) — enables analytics on who's sharing what
 - Add auth so teams can save, annotate, and revisit past analyses collaboratively
 - Make charts fully interactive with click-to-video and hover details
-- Pull pagination so large channels (500+ videos) can be fully analyzed
-- Keyboard navigation throughout (v1 is mouse-first)
+- Pull pagination so large channels (500+ videos) can be fully analyzed, not just the most recent 50
+- Proper API response caching layer — avoid re-fetching the same channel twice in a session
 
 ---
 

@@ -114,20 +114,45 @@ Shareable analysis URLs encode only the channel ID in base64url. No database, no
 
 **Total build time:** ~8 hours from blank repo to deployed product.
 
-**AI tools used:** Claude (architecture, component scaffolding, algorithm design), Cursor (inline completions while wiring components together).
+**Editor:** Cursor
+**AI assistant:** Claude (Anthropic) via Claude Code CLI
+
+---
+
+### Development methodology: SDD + Engram
+
+This wasn't standard "ask AI, paste code" development. I used a structured methodology called **Spec-Driven Development (SDD)** — a workflow from [Gentleman](https://www.youtube.com/@gentlemanprogramming) that treats every feature as a first-class artifact *before* a single line of code is written.
+
+Each meaningful feature went through an explicit chain:
+
+```
+explore → propose → spec → design → tasks → apply → verify → archive
+```
+
+Each artifact is persisted via **Engram** — a session-persistent memory layer that keeps the AI's full context alive across separate work sessions. Architectural decisions made in session 1 were still accurate and available in session 5 without re-explaining anything.
+
+**Why this matters in practice:**
+- No context drift — every session started with the full picture: stack constraints, API strategy, component structure, decisions already made and *why*
+- No scope creep — specs defined what was in and out before implementation started, so AI never went off-script
+- Human stays in control — the AI executed tasks defined in the spec, it didn't invent the product. I directed, it built.
+
+This is part of my standard setup across projects. It's the difference between using AI as a sophisticated autocomplete and using it as a properly scoped collaborator.
+
+---
 
 **What I automated/accelerated:**
 - Full TypeScript type system designed in a single planning session
 - Algorithm implementation (Z-score trending, composite scoring) — drafted by AI, verified and refined by me
-- Boilerplate component structure (hooks, API routes, shared utilities)
-- README and documentation
+- Boilerplate structure (API route wrappers, hook patterns, shared utilities)
+- Documentation
 
 **What I made the human decisions on:**
-- Using the playlistItems API over search (quota efficiency tradeoff)
-- Z-score approach for trending (channel-relative, not arbitrary thresholds)
-- Choosing shadcn/ui v4 with Base UI (newer, more composable)
-- Progressive loading phases UX (showing real channel data while videos load)
-- Base64url share encoding without a database
+- Using the `playlistItems` API over `search.list` (quota savings of ~97%)
+- Z-score approach for trending — channel-relative, not arbitrary absolute thresholds
+- Composite performance score architecture (4 equally weighted dimensions)
+- Progressive loading UX — channel header appears while videos are still fetching
+- Base64url share encoding with no database dependency
+- shadcn/ui v4 on Base UI (not Radix) — newer, more composable, better long-term
 
 ---
 
@@ -135,12 +160,12 @@ Shareable analysis URLs encode only the channel ID in base64url. No database, no
 
 **What I'd add with more time:**
 
-1. **Multi-channel comparison** — analyze 2–3 channels side by side, compare engagement curves
-2. **Historical tracking** — store analyses over time to show channel trajectory (requires Supabase/Postgres)
-3. **Video topic clustering** — use AI to group videos by theme and show which topics perform best
-4. **Notification alerts** — "this competitor just posted a viral video" via email/Slack
-5. **Thumbnail analysis** — CV-powered thumbnail effectiveness scoring
-6. **Best time to post** — analyze publish times vs performance to surface optimal upload windows
+1. **Multi-channel comparison** — analyze 2–3 channels side by side, overlay engagement curves and compare content strategies
+2. **Historical tracking** — store analysis snapshots over time to show channel trajectory week-over-week (requires Supabase/Postgres)
+3. **Video topic clustering** — use AI to group videos by theme and surface which content pillars perform best
+4. **Thumbnail analysis** — CV-powered scoring of thumbnail effectiveness correlated with performance
+5. **Best time to post** — analyze publish timestamps vs performance to surface optimal upload windows
+6. **Team workspaces** — shared saved analyses with annotations, so the whole team works from the same competitive intelligence
 
 **What feels missing from v1:**
 
@@ -150,9 +175,9 @@ Shareable analysis URLs encode only the channel ID in base64url. No database, no
 
 **What I'd improve in v2:**
 
-- Replace base64 share links with short URLs backed by a real datastore
-- Add auth so teams can save and revisit past analyses
-- Keyboard navigation throughout (currently mouse-first)
+- Replace base64 share links with short URLs backed by a real datastore (enables analytics on who's sharing what)
+- Add auth so teams can save, annotate, and revisit past analyses collaboratively
+- Pull pagination so large channels (500+ videos) can be fully analyzed, not just the most recent 50
 
 ---
 
