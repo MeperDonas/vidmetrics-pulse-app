@@ -12,9 +12,10 @@ Instantly analyze any YouTube channel to see which videos are crushing it. Paste
 - **Video metrics** — views, likes, comments, engagement rate per video
 - **Trending indicators** — Z-score algorithm identifies videos outperforming the channel's own baseline
 - **Performance scores** — composite 0–100 metric across views, engagement, consistency, and growth velocity
-- **Charts** — views over time (line), top engagement (bar), performance radar
+- **Charts** — views over time (area), top engagement (bar), performance radar, growth trend, content breakdown by format
 - **Sorting & filtering** — by any metric, date range, or free-text search
-- **CSV export** — download the full dataset for any channel
+- **Video segmentation** — toggle between All / Videos / Shorts with grid and list views
+- **Export** — CSV, Excel, and PDF download for any channel analysis
 - **Shareable links** — base64-encoded URLs, no database required
 - **Dark / light mode** — system preference + manual toggle
 - **Responsive** — mobile-first, works on any screen size
@@ -25,7 +26,7 @@ Instantly analyze any YouTube channel to see which videos are crushing it. Paste
 
 | Layer | Choice | Why |
 |-------|--------|-----|
-| Framework | Next.js 15 (App Router) | SSR for SEO, API routes keep key server-side |
+| Framework | Next.js 16 (App Router) | SSR for SEO, API routes keep key server-side |
 | Styling | Tailwind CSS + shadcn/ui | Required + fast polished SaaS UI |
 | Charts | Recharts | React-native, lightweight, good TypeScript support |
 | Data | YouTube Data API v3 | Official, reliable, well-documented |
@@ -143,9 +144,9 @@ Shareable analysis URLs encode only the channel ID in base64url. No database, no
 
 **What feels missing from v1:**
 
-- No pagination — currently capped at 50 videos
-- No ability to see shorts vs long-form separately
-- Charts could be more interactive (click a data point to open the video)
+- No pagination — currently capped at 50 most recent videos
+- Charts are read-only — clicking a data point should open the video or highlight it in the list
+- No cross-channel benchmarking — all metrics are relative to the channel itself, not industry averages
 
 **What I'd improve in v2:**
 
